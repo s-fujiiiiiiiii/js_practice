@@ -2,3 +2,10 @@
   text-decoration: line-through;
   color: gray;
 }
+
+#filters {
+  margin-top: 10px;
+}
+#filters button {
+  margin-right: 5px;
+}

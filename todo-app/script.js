@@ -130,3 +130,28 @@ function saveTodos() {
     });
     localStorage.setItem('todos', JSON.stringify(todos)); // JSON文字列にして保存
 }
+
+document.getElementById('filter-all').addEventListener('click', () => {
+    filterTodos('all');
+});
+document.getElementById('filter-active').addEventListener('click', () => {
+    filterTodos('active');
+});
+document.getElementById('filter-completed').addEventListener('click', () => {
+    filterTodos('completed');
+});
+
+function filterTodos(type) {
+    const items = document.querySelectorAll('#todoList li');
+    items.forEach(li => {
+        const completed = li.classList.contains('completed');
+
+        if (type === 'all') {
+            li.style.display = '';
+        } else if (type === 'active') {
+            li.style.display = completed ? 'none' : '';
+        }else if (type === 'completed') {
+            li.style.display = completed ? '' : 'none';
+        }
+    });
+}
