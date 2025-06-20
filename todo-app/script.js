@@ -2,19 +2,43 @@ const input = document.getElementById('todoInput');
 const addBtn = document.getElementById('addBtn');
 const todoList = document.getElementById('todoList');
 
+// -----JSONファイル読み込みvar----
+// async function loadTodos() {
+//     try {
+//         const response = await fetch('todos.json');
+//         if (!response.ok) throw new Error('JSONファイルが見つかりません');
+
+//         const todos = await response.json();
+//         if (!Array.isArray(todos)) {
+//             throw new Error('JSONの形式が不正です');
+//         }
+
+//         todos.forEach(todo => {
+//             addTodoFromText(todo.text);
+//         });
+//     } catch (error) {
+//         console.error('JSON読み込みエラー:', error);
+//         alert('ToDoの読み込みに失敗しました');
+//     }
+// }
+
+
 async function loadTodos() {
     try {
-        const response = await fetch('todos.json'); // JSONファイル取得
-        if (!response.ok) {
-            throw new Error('ネットワークエラー');
+        const stored = localStorage.getItem('todos');
+        if (!stored) return;
+
+        const todos = JSON.parse(stored);
+        if (!Array.isArray(todos)) {
+            throw new Error('保存されたデータ形式が不正です');
         }
-        const todos = await response.json();
 
         todos.forEach(todo => {
             addTodoFromText(todo.text);
         });
-    } catch (error) {
-        alert('ToDoの読み込みに失敗しました: ' + error.message);
+    }catch (error) {
+        console.error('ToDoの読み込みに失敗', error);
+        alert('ToDoの読み込みに失敗しました');
     }
 }
 
@@ -32,6 +56,7 @@ function addTodoFromText(text) {
     delBtn.addEventListener('click', (event) => {
         event.stopPropagation();
         todoList.removeChild(li);
+        saveTodos();
     });
 
     li.appendChild(delBtn);
@@ -40,6 +65,7 @@ function addTodoFromText(text) {
 } catch (error) {
     console.error('JSONからToDo追加時のエラー', error);
 }
+    saveTodos();
 }
 
 //ページ読み込み時に呼び出す
@@ -89,7 +115,18 @@ function addTodo() {
         console.error('ToDo追加時のエラー:', error);
         alert('ToDoの追加に失敗しました');
     }
+    saveTodos();
 };
 
 // ボタンをクリックしたらaddTodo関数を呼び出す
 addBtn.addEventListener('click', addTodo);
+
+function saveTodos() {
+    // ulの中のliをすべて取り出してtextだけを配列にする
+    const todos = [];
+    document.querySelectorAll('#todoList li').forEach(li => {
+        const text = li.firstChild.textContent; // 最初のテキストだけを取得("削除"ボタンを除く)
+        todos.push({text: text});
+    });
+    localStorage.setItem('todos', JSON.stringify(todos)); // JSON文字列にして保存
+}
