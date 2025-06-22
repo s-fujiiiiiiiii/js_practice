@@ -34,7 +34,7 @@ async function loadTodos() {
         }
 
         todos.forEach(todo => {
-            addTodoFromText(todo.text);
+            addTodoFromText(todo.text, todo.completed);
         });
     }catch (error) {
         console.error('ToDoの読み込みに失敗', error);
@@ -42,13 +42,14 @@ async function loadTodos() {
     }
 }
 
-function addTodoFromText(text) {
+function addTodoFromText(text, completed = false) {
     try {
     const li = document.createElement('li');
     li.textContent = text;
 
     li.addEventListener('click', () => {
         li.classList.toggle('completed');
+        saveTodos();
     });
 
     const delBtn = document.createElement('button');
@@ -121,12 +122,15 @@ function addTodo() {
 // ボタンをクリックしたらaddTodo関数を呼び出す
 addBtn.addEventListener('click', addTodo);
 
+
+
 function saveTodos() {
     // ulの中のliをすべて取り出してtextだけを配列にする
     const todos = [];
     document.querySelectorAll('#todoList li').forEach(li => {
         const text = li.firstChild.textContent; // 最初のテキストだけを取得("削除"ボタンを除く)
-        todos.push({text: text});
+        const completed = li.classList.contains('completed')
+        todos.push({text: text, completed: completed });
     });
     localStorage.setItem('todos', JSON.stringify(todos)); // JSON文字列にして保存
 }
